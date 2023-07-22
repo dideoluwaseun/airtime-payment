@@ -25,8 +25,31 @@ The application will start on `http://localhost:8080`.
 **Method:** `POST`
 
 Registers a new user. Requires providing a `username`, `password` and `userRole` in the request body.
-User roles available are ROLE_ADMIN and ROLE_USER
-Returns access Token
+User roles available are ROLE_ADMIN and ROLE_USER.
+Returns access Token.
+
+# User Login
+
+**Endpoint:** `/api/v1/users/sign-in`
+**Method:** `POST`
+
+Authenticates a user. Requires providing a `username` and `password` as request parameters. Returns a JWT token upon successful authentication.
+
+# Purchase Airtime
+
+**Endpoint:** `/api/v1/airtime-products/purchase`
+**Method:** `POST`
+**Authorization:** Bearer Token (JWT)
+
+Allows authenticated users to purchase airtime. Requires providing the `phoneNumber`, `amount` and `network provider` in the request body. The request must be authenticated with a valid JWT token.
+
+#JWT Authentication
+
+The API uses JWT for user authentication. To access the authenticated endpoints (`/api/v1/airtime-products/purchase`), clients must include the JWT token in the `Authorization` header of the request. The header should look like: `Authorization: Bearer <JWT_TOKEN>`. The JWT token is obtained by authenticating the user via the `/api/v1/users/sign-in` endpoint.
+
+#External Airtime Purchase API
+
+The API communicates with an external airtime purchase service to process airtime purchases. The external service URL and credentials are configured in the application properties (`application.properties`).
 
 
 
