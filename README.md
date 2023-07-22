@@ -2,8 +2,8 @@
 This is a Spring Boot application that serves as an API for purchasing airtime from an external service. The API uses JWT (JSON Web Tokens) for user authentication to secure the endpoints.
 
 # Requirements
-Java 11 or higher
-Maven build tool
+-Java 11 or higher
+-Maven build tool
 
 # Getting Started
 git clone https://github.com/dideoluwaseun/airtime-payment.git
@@ -19,7 +19,7 @@ mvn clean install
 The application will start on `http://localhost:8080`.
 
 ## API Endpoints
-#User Registration
+# User Registration
 
 **Endpoint:** `/api/v1/users/sign-up`
 **Method:** `POST`
