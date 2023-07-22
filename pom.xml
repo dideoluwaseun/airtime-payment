@@ -93,7 +93,14 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-<!--		<dependency>-->
+		<dependency>
+			<!-- JSON Web Token Support -->
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.9.1</version>
+		</dependency>
+
+		<!--		<dependency>-->
 <!--			<groupId>org.testcontainers</groupId>-->
 <!--			<artifactId>junit-jupiter</artifactId>-->
 <!--			<scope>test</scope>-->
