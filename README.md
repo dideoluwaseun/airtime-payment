@@ -4,3 +4,6 @@ This is a Spring Boot application that serves as an API for purchasing airtime f
 # Requirements
 Java 11 or higher
 Maven build tool
+
+# Getting Started
+git clone https://github.com/dideoluwaseun/airtime-payment.git
