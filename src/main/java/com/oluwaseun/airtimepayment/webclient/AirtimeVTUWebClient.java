@@ -3,6 +3,7 @@ package com.oluwaseun.airtimepayment.webclient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oluwaseun.airtimepayment.config.ApplicationConfig;
+import com.oluwaseun.airtimepayment.dto.ErrorResponse;
 import com.oluwaseun.airtimepayment.util.PaymentHashGenerator;
 import com.oluwaseun.airtimepayment.webclient.dto.AirtimeVTUWebClientRequest;
 import com.oluwaseun.airtimepayment.webclient.dto.AirtimeVTUWebClientResponse;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 
@@ -72,7 +74,10 @@ public class AirtimeVTUWebClient {
         } catch (WebClientResponseException ex) {
             log.error("Request failed with status code: {}", ex.getRawStatusCode());
             log.error("Response Body: {}", ex.getResponseBodyAsString());
-        }
+        } catch (WebClientRequestException ex) {
+            log.error("An error occurred {}", ex.getMessage());
+            throw new RuntimeException("An error occurred", ex);
+    }
         return null;
     }
 }

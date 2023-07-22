@@ -1,6 +1,10 @@
 package com.oluwaseun.airtimepayment.service.impl;
 
+import com.oluwaseun.airtimepayment.Exception.DuplicateEntityException;
+import com.oluwaseun.airtimepayment.Exception.EntityNotFoundException;
+import com.oluwaseun.airtimepayment.Exception.ValidationException;
 import com.oluwaseun.airtimepayment.domain.AirtimeProduct;
+import com.oluwaseun.airtimepayment.dto.CreateAirtimeProductsRequest;
 import com.oluwaseun.airtimepayment.dto.PurchaseAirtimeRequest;
 import com.oluwaseun.airtimepayment.dto.PurchaseAirtimeResponse;
 import com.oluwaseun.airtimepayment.repository.AirtimeProductRepository;
@@ -29,11 +33,11 @@ public class AirtimeProductServiceImpl implements AirtimeProductService {
     public PurchaseAirtimeResponse purchaseAirtime(PurchaseAirtimeRequest request) {
         Optional<AirtimeProduct> optionalAirtimeProduct = airtimeProductRepository.findByNetworkProvider(request.getNetworkProvider());
 
-        AirtimeProduct airtimeProduct = optionalAirtimeProduct.orElseThrow(() -> new RuntimeException("Value is not present!"));
+        AirtimeProduct airtimeProduct = optionalAirtimeProduct.orElseThrow(() -> new EntityNotFoundException("Network provider does not exist"));
 
         Integer amount = request.getAmount();
         if (amount < airtimeProduct.getMinAmount() || amount > airtimeProduct.getMaxAmount()) {
-            throw new RuntimeException("Value must be greater than " + airtimeProduct.getMinAmount() + " and less than " + airtimeProduct.getMaxAmount());
+            throw new ValidationException("Value must be greater than " + airtimeProduct.getMinAmount() + " and less than " + airtimeProduct.getMaxAmount());
         }
 
         try {
@@ -46,18 +50,31 @@ public class AirtimeProductServiceImpl implements AirtimeProductService {
                             .phoneNumber(request.getPhoneNumber())
                             .build())
                     .build());
-
-            return PurchaseAirtimeResponse.builder()
-                    .responseMessage(airtimeVTUWebClientResponse.responseMessage)
-                    .referenceId(airtimeVTUWebClientResponse.referenceId)
-                    .phoneNumber(airtimeVTUWebClientResponse.data.phoneNumber)
-                    .timestamp(Calendar.getInstance().getTime())
-                    .amount(airtimeVTUWebClientResponse.data.amount)
-                    .build();
-
+                return PurchaseAirtimeResponse.builder()
+                        .responseMessage(airtimeVTUWebClientResponse.responseMessage)
+                        .referenceId(airtimeVTUWebClientResponse.referenceId)
+                        .phoneNumber(airtimeVTUWebClientResponse.data.phoneNumber)
+                        .timestamp(Calendar.getInstance().getTime())
+                        .amount(airtimeVTUWebClientResponse.data.amount)
+                        .build();
         } catch (Exception e) {
-            log.error("");
+            throw new ValidationException(e);
         }
-        return null;
     }
+
+    @Override
+    public void createAirtimeProducts(CreateAirtimeProductsRequest request) {
+        Optional<AirtimeProduct> optionalAirtimeProduct = airtimeProductRepository.findByNetworkProvider(request.getNetworkProvider());
+
+        if(optionalAirtimeProduct.isPresent())
+            throw new DuplicateEntityException("duplicate airtime product");
+
+        airtimeProductRepository.save(AirtimeProduct.builder()
+                .networkProvider(request.getNetworkProvider())
+                .productCode(request.getProductCode())
+                .minAmount(request.getMinAmount())
+                .maxAmount(request.getMaxAmount())
+                .build());
+    }
+
 }
