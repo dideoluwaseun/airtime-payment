@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oluwaseun.airtimepayment.Exception.ValidationException;
 import com.oluwaseun.airtimepayment.config.ApplicationConfig;
-import com.oluwaseun.airtimepayment.dto.ErrorResponse;
 import com.oluwaseun.airtimepayment.util.PaymentHashGenerator;
 import com.oluwaseun.airtimepayment.webclient.dto.AirtimeVTUWebClientRequest;
 import com.oluwaseun.airtimepayment.webclient.dto.AirtimeVTUWebClientResponse;
@@ -14,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
@@ -49,6 +47,7 @@ public class AirtimeVTUWebClient {
     public AirtimeVTUWebClientResponse sendAirtimeVTURequest(AirtimeVTUWebClientRequest airtimeVTUWebClientRequest) throws JsonProcessingException {
         try {
 
+            //serialize request body to json
             String requestBody = null;
             try {
                 requestBody = mapper.writeValueAsString(airtimeVTUWebClientRequest);
@@ -56,13 +55,16 @@ public class AirtimeVTUWebClient {
                 throw new RuntimeException(e);
             }
 
+            //calculate payment hash
             String hmac512 = PaymentHashGenerator.calculateHMAC512(requestBody, privateKey);
 
+            //build headers
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", String.format("Bearer %s", publicKey));
             headers.set("PaymentHash", hmac512);
 
 
+            //make API call
             AirtimeVTUWebClientResponse response = webClient.post()
                     .uri(apiUrl)
                     .headers(httpHeaders -> httpHeaders.addAll(headers))
