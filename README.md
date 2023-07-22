@@ -7,3 +7,27 @@ Maven build tool
 
 # Getting Started
 git clone https://github.com/dideoluwaseun/airtime-payment.git
+
+# Navigate to the project directory:
+cd airtime-payment
+
+# Build the project using Maven
+mvn clean install
+
+#Run the Application
+
+The application will start on `http://localhost:8080`.
+
+## API Endpoints
+#User Registration
+
+**Endpoint:** `/api/v1/users/sign-up`
+**Method:** `POST`
+
+Registers a new user. Requires providing a `username`, `password` and `userRole` in the request body.
+User roles available are ROLE_ADMIN and ROLE_USER
+Returns access Token
+
+
+
+
