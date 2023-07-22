@@ -41,7 +41,7 @@ Authenticates a user. Requires providing a `username` and `password` as request 
 **Method:** `POST`
 **Authorization:** Bearer Token (JWT)
 
-Allows authenticated users to purchase airtime. Requires providing the `phoneNumber`, `amount` and `network provider` in the request body. The request must be authenticated with a valid JWT token.
+Allows authenticated users to purchase airtime. Requires providing the `phoneNumber`, `amount` and `network provider` in the request body. Available network providers are MTN, GLO, AIRTEL and 9Mobile. The request must be authenticated with a valid JWT token.
 
 # JWT Authentication
 
