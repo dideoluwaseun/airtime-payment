@@ -1,11 +1,18 @@
 package com.oluwaseun.airtimepayment.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class PurchaseAirtimeRequest {
     @NotBlank(message = "network provider cannot be empty")
     private String networkProvider;
@@ -14,5 +21,6 @@ public class PurchaseAirtimeRequest {
     private Integer amount;
 
     @NotBlank(message = "phone number cannot be empty")
+    @Pattern(regexp = "^[0-9]{11}$", message = "username must be a valid email address ")
     private String phoneNumber;
 }

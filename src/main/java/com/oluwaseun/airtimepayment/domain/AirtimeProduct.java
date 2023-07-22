@@ -15,7 +15,6 @@ public class AirtimeProduct {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String networkProvider;
     private String productCode;
     private Integer minAmount;

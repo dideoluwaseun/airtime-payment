@@ -2,6 +2,7 @@ package com.oluwaseun.airtimepayment.webclient;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.oluwaseun.airtimepayment.Exception.ValidationException;
 import com.oluwaseun.airtimepayment.config.ApplicationConfig;
 import com.oluwaseun.airtimepayment.dto.ErrorResponse;
 import com.oluwaseun.airtimepayment.util.PaymentHashGenerator;
@@ -37,15 +38,17 @@ public class AirtimeVTUWebClient {
     @Value("${airtime-vtu.api.privateKey:privateKey}")
     private String privateKey ;
 
+    private static final ObjectMapper mapper = new ObjectMapper();
+
+
     @Autowired
     public void setWebClient(WebClient webClient) {
         this.webClient = webClient;
     }
 
-    public AirtimeVTUWebClientResponse sendAirtimeVTURequest(AirtimeVTUWebClientRequest airtimeVTUWebClientRequest) {
+    public AirtimeVTUWebClientResponse sendAirtimeVTURequest(AirtimeVTUWebClientRequest airtimeVTUWebClientRequest) throws JsonProcessingException {
         try {
 
-            ObjectMapper mapper = new ObjectMapper();
             String requestBody = null;
             try {
                 requestBody = mapper.writeValueAsString(airtimeVTUWebClientRequest);
@@ -63,21 +66,24 @@ public class AirtimeVTUWebClient {
             AirtimeVTUWebClientResponse response = webClient.post()
                     .uri(apiUrl)
                     .headers(httpHeaders -> httpHeaders.addAll(headers))
-                    .bodyValue(requestBody)
+                    .bodyValue(airtimeVTUWebClientRequest)
                     .retrieve()
                     .bodyToMono(AirtimeVTUWebClientResponse.class)
                     .block();
 
-            if (response != null) {
+            if (response != null && response.getResponseCode().equals("00")) {
                 return response;
             }
         } catch (WebClientResponseException ex) {
+            AirtimeVTUWebClientResponse response = mapper.readValue(ex.getResponseBodyAsString(), AirtimeVTUWebClientResponse.class);
+            if(response.getResponseCode().equals("91"))
+                throw new ValidationException(response.getResponseMessage());
             log.error("Request failed with status code: {}", ex.getRawStatusCode());
             log.error("Response Body: {}", ex.getResponseBodyAsString());
         } catch (WebClientRequestException ex) {
             log.error("An error occurred {}", ex.getMessage());
-            throw new RuntimeException("An error occurred", ex);
-    }
+            throw new RuntimeException("An error occurred", ex.getCause());
+        }
         return null;
     }
 }

@@ -13,6 +13,8 @@ import java.util.Calendar;
 
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
+
+    //
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
         // Set the content type of the response to indicate it's JSON

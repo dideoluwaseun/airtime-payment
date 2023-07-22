@@ -1,5 +1,6 @@
 package com.oluwaseun.airtimepayment.Exception;
 
+import com.github.dockerjava.api.exception.UnauthorizedException;
 import com.oluwaseun.airtimepayment.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import java.util.Calendar;
 @RestControllerAdvice
 public class GeneralExceptionHandler {
 
+    //handle exceptions
     @ExceptionHandler(DuplicateEntityException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponse> handleBadRequest(DuplicateEntityException ex) {
@@ -65,6 +67,31 @@ public class GeneralExceptionHandler {
                 .build();
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
+    public ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException ex) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .details("Bad credentials")
+                .status(HttpStatus.UNAUTHORIZED.value())
+                .message(ex.getMessage())
+                .timestamp(Calendar.getInstance().getTime())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<ErrorResponse> handleException(Exception ex) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .details("An error occurred")
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .message(ex.getMessage())
+                .timestamp(Calendar.getInstance().getTime())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

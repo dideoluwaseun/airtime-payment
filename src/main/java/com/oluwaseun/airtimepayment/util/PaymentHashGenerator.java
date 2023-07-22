@@ -8,6 +8,8 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 public class PaymentHashGenerator {
+
+    //util ethod to generate payment hash
     public static String calculateHMAC512(String data, String key) {
 
         String HMAC_SHA512 = "HmacSHA512";

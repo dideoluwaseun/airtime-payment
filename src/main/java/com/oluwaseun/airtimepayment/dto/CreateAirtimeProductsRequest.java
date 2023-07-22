@@ -1,11 +1,17 @@
 package com.oluwaseun.airtimepayment.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CreateAirtimeProductsRequest {
     @NotBlank(message = "network provider cannot be blank")
     private String networkProvider;

@@ -1,14 +1,14 @@
 package com.oluwaseun.airtimepayment.service;
 
-import com.oluwaseun.airtimepayment.dto.SignInResponse;
+import com.oluwaseun.airtimepayment.dto.UserAuthResponse;
 import com.oluwaseun.airtimepayment.dto.SignUpRequest;
 
 import java.util.List;
 
 public interface UserService {
-    SignInResponse signIn(String username, String password);
+    UserAuthResponse signIn(String username, String password);
 
-    SignInResponse signup(SignUpRequest request);
+    UserAuthResponse signup(SignUpRequest request);
 
     List<String> getUserRoles();
 }

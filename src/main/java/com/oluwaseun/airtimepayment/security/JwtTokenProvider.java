@@ -24,11 +24,8 @@ public class JwtTokenProvider {
     @Value("${security.jwt.token.secret-key:secret-key}")
     private String secretKey;
 
-    @Value("${security.jwt.token.expire-length:3600000}")
-    private long validityInMilliseconds = 3600000; // 1h
-
-//    @Autowired
-//    private UserDetailsServiceImpl userDetailsService;
+    @Value("${security.jwt.token.expire-length:900000}")
+    private long validityInMilliseconds = 900000;
 
     @PostConstruct
     protected void init() {
@@ -37,12 +34,15 @@ public class JwtTokenProvider {
 
     public String generateToken(String username, List<UserRole> userRoles) {
 
+        //set claims
         Claims claims = Jwts.claims().setSubject(username);
         claims.put("auth", userRoles.stream().map(s -> new SimpleGrantedAuthority(s.getAuthority())).filter(Objects::nonNull).collect(Collectors.toList()));
 
+        //set validity
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
+        //sign jwt
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
@@ -57,6 +57,7 @@ public class JwtTokenProvider {
     }
 
     public String resolveToken(HttpServletRequest req) {
+        //extract token from authorization header
         String bearerToken = req.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);

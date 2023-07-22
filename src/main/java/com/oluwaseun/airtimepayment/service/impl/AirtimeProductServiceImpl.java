@@ -31,16 +31,20 @@ public class AirtimeProductServiceImpl implements AirtimeProductService {
 
     @Override
     public PurchaseAirtimeResponse purchaseAirtime(PurchaseAirtimeRequest request) {
+        log.info("processing purchase airtime request");
+        //check if network provider and product exists
         Optional<AirtimeProduct> optionalAirtimeProduct = airtimeProductRepository.findByNetworkProvider(request.getNetworkProvider());
 
         AirtimeProduct airtimeProduct = optionalAirtimeProduct.orElseThrow(() -> new EntityNotFoundException("Network provider does not exist"));
 
+        //check if amount is greater than min amount and less than max amount
         Integer amount = request.getAmount();
         if (amount < airtimeProduct.getMinAmount() || amount > airtimeProduct.getMaxAmount()) {
             throw new ValidationException("Value must be greater than " + airtimeProduct.getMinAmount() + " and less than " + airtimeProduct.getMaxAmount());
         }
 
         try {
+            // call airtime VTU API
             UUID uuid = UUID.randomUUID();
             AirtimeVTUWebClientResponse airtimeVTUWebClientResponse = airtimeVTUWebClient.sendAirtimeVTURequest(AirtimeVTUWebClientRequest.builder()
                     .requestId(uuid.toString())
@@ -50,7 +54,11 @@ public class AirtimeProductServiceImpl implements AirtimeProductService {
                             .phoneNumber(request.getPhoneNumber())
                             .build())
                     .build());
-                return PurchaseAirtimeResponse.builder()
+
+            log.info("done processing purchase airtime request");
+
+            //map API response
+            return PurchaseAirtimeResponse.builder()
                         .responseMessage(airtimeVTUWebClientResponse.responseMessage)
                         .referenceId(airtimeVTUWebClientResponse.referenceId)
                         .phoneNumber(airtimeVTUWebClientResponse.data.phoneNumber)
@@ -58,7 +66,7 @@ public class AirtimeProductServiceImpl implements AirtimeProductService {
                         .amount(airtimeVTUWebClientResponse.data.amount)
                         .build();
         } catch (Exception e) {
-            throw new ValidationException(e);
+            throw new RuntimeException(e.getMessage());
         }
     }
 

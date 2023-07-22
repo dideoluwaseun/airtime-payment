@@ -21,12 +21,14 @@ import javax.validation.Valid;
 public class AirtimeProductController {
     private final AirtimeProductService airtimeProductService;
 
+    //endpoint to make airtime payment
     @PostMapping("purchase")
-    public ResponseEntity<PurchaseAirtimeResponse> purchaseAirtime(@RequestBody PurchaseAirtimeRequest request) {
+    public ResponseEntity<PurchaseAirtimeResponse> purchaseAirtime(@Valid @RequestBody PurchaseAirtimeRequest request) {
         PurchaseAirtimeResponse purchaseAirtimeResponse = airtimeProductService.purchaseAirtime(request);
         return new ResponseEntity<>(purchaseAirtimeResponse, HttpStatus.OK);
     }
 
+    //endpoint to create airtime product, available to only admin
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("")
     public ResponseEntity<Void> createAirtimeProduct(@Valid @RequestBody CreateAirtimeProductsRequest request) {

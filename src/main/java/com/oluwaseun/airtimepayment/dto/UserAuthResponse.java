@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
-public class SignInResponse {
+public class UserAuthResponse {
     private String username;
     private List<UserRole> userRoles;
     private String accessToken;
