@@ -4,7 +4,7 @@ import com.github.dockerjava.api.exception.UnauthorizedException;
 import com.oluwaseun.airtimepayment.Exception.DuplicateEntityException;
 import com.oluwaseun.airtimepayment.domain.ApplicationUser;
 import com.oluwaseun.airtimepayment.domain.UserRole;
-import com.oluwaseun.airtimepayment.dto.UserAuthResponse;
+import com.oluwaseun.airtimepayment.dto.SignInResponse;
 import com.oluwaseun.airtimepayment.dto.SignUpRequest;
 import com.oluwaseun.airtimepayment.repository.UserRepository;
 import com.oluwaseun.airtimepayment.security.JwtTokenProvider;
@@ -34,7 +34,9 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public UserAuthResponse signIn(String username, String password) {
+    public SignInResponse signIn(String username, String password) {
+        log.info("processing sign in request");
+
         try {
             // attempt authentication
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
@@ -45,7 +47,10 @@ public class UserServiceImpl implements UserService {
             //generate jwt token
             List<UserRole> userRoles = userRepository.findByUsername(username).getUserRoles();
             String token = jwtTokenProvider.generateToken(username, userRoles);
-            return UserAuthResponse.builder().username(username).userRoles(userRoles).accessToken(token).build();
+
+            log.info("done processing sign in request");
+
+            return SignInResponse.builder().username(username).userRoles(userRoles).accessToken(token).build();
         } catch (AuthenticationException e) {
             log.info("Incorrect user credentials");
             throw new UnauthorizedException(e.getMessage());
@@ -53,7 +58,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserAuthResponse signup(SignUpRequest request) {
+    public void signup(SignUpRequest request) {
         log.info("processing sign up request");
 
         //check if user exists
@@ -67,12 +72,7 @@ public class UserServiceImpl implements UserService {
                     .userRoles(request.getUserRoles())
                     .build());
 
-            //generate access token
-            String token = jwtTokenProvider.generateToken(request.getUsername(), request.getUserRoles());
-
             log.info("done processing sign up request");
-            return UserAuthResponse.builder().username(request.getUsername()).userRoles(request.getUserRoles()).accessToken(token).build();
-
         } else {
             throw new DuplicateEntityException("Username is already in use");
         }

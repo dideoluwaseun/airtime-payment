@@ -21,6 +21,6 @@ public class PurchaseAirtimeRequest {
     private Integer amount;
 
     @NotBlank(message = "phone number cannot be empty")
-    @Pattern(regexp = "^[0-9]{11}$", message = "username must be a valid email address ")
+    @Pattern(regexp = "^[0-9]{11}$", message = "phone number must be 11 digits long and not contain alphabets")
     private String phoneNumber;
 }
