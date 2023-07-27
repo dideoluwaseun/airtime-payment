@@ -28,12 +28,12 @@ public class AirtimeVTUWebClient {
 
     private final ApplicationConfig applicationConfig;
 
-    @Value("${airtime-vtu.api.url:url}")
+    @Value("${AIRTIME-VTU-API-URL-VALUE}")
     private String apiUrl;
 
-    @Value("${airtime-vtu.api.publicKey:publicKey}")
+    @Value("${AIRTIME-VTU-API-PUBLIC-KEY-VALUE}")
     private String publicKey;
-    @Value("${airtime-vtu.api.privateKey:privateKey}")
+    @Value("${AIRTIME-VTU-API-PRIVATE-KEY-VALUE}")
     private String privateKey ;
 
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -77,11 +77,10 @@ public class AirtimeVTUWebClient {
                 return response;
             }
         } catch (WebClientResponseException ex) {
-            AirtimeVTUWebClientResponse response = mapper.readValue(ex.getResponseBodyAsString(), AirtimeVTUWebClientResponse.class);
-            if(response.getResponseCode().equals("91"))
-                throw new ValidationException(response.getResponseMessage());
             log.error("Request failed with status code: {}", ex.getRawStatusCode());
             log.error("Response Body: {}", ex.getResponseBodyAsString());
+            AirtimeVTUWebClientResponse response = mapper.readValue(ex.getResponseBodyAsString(), AirtimeVTUWebClientResponse.class);
+                throw new ValidationException(response.getResponseMessage());
         } catch (WebClientRequestException ex) {
             log.error("An error occurred {}", ex.getMessage());
             throw new RuntimeException("An error occurred", ex.getCause());
