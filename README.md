@@ -26,7 +26,6 @@ The application will start on `http://localhost:8080`.
 
 Registers a new user. Requires providing a `username`, `password` and `userRole` in the request body.
 User roles available are ROLE_ADMIN and ROLE_USER.
-Returns access Token.
 
 ## User Login
 
